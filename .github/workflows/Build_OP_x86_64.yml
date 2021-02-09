@@ -117,7 +117,15 @@ jobs:
         path: openwrt/bin
     
     - name: Upload firmware to cowtransfer
-      id: cowtransfer
+      id: cowtransfer1
+      run: |
+        curl -fsSL git.io/file-transfer | sh
+        ./transfer cow --block 2621440 -s -p 64 --no-progress openwrt/bin 2>&1 | tee cowtransfer.log
+        echo "::warning file=cowtransfer.com::$(cat cowtransfer.log | grep https)"
+        echo "::set-output name=url::$(cat cowtransfer.log | grep https | cut -f3 -d" ")"
+    
+    - name: Upload firmware to cowtransfer
+      id: cowtransfer2
       run: |
         curl -fsSL git.io/file-transfer | sh
         ./transfer cow --block 2621440 -s -p 64 --no-progress ${FIRMWARE} 2>&1 | tee cowtransfer.log
